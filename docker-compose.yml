@@ -1,47 +1,40 @@
 version: '3'
 
 services:
-  backend:
+  web:
     build:
       context: ./backend
-    container_name: backend
+      dockerfile: Dockerfile
+    command: gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - aiogram
+    expose:
+      - "8000"
+
+  aiogram:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.aiogram
     volumes:
       - ./backend:/app
     expose:
-      - 8000
-    depends_on:
-      - db
-    environment:
-      - DATABASE_URL=postgres://user:password@db:5432/vikingdb
-    command: gunicorn viking.wsgi:application --bind 0.0.0.0:8000
+      - "8443"
 
   frontend:
     build:
       context: ./frontend
-    container_name: frontend
+      dockerfile: Dockerfile
     expose:
-      - 80
-
-  db:
-    image: postgres
-    container_name: postgres
-    environment:
-      POSTGRES_DB: vikingdb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "80"
 
   nginx:
     image: nginx:latest
-    container_name: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
     ports:
       - "80:80"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
     depends_on:
-      - backend
+      - web
       - frontend
-
-volumes:
-  postgres_data:

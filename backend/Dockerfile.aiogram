@@ -1,4 +1,4 @@
-# Dockerfile for Django
+# Dockerfile for Aiogram
 FROM python:3.11-slim
 
 # Set environment variables
@@ -12,11 +12,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
-COPY . .
+# Copy bot files
+COPY main.py .
 
-# Expose port 8000
-EXPOSE 8000
+# Expose port if needed
+EXPOSE 8443
 
-# Run Django development server (for production use Gunicorn or another WSGI server)
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "myproject.wsgi:application"]
+# Start bot
+CMD ["python", "main.py"]

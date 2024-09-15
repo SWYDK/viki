@@ -1,9 +1,8 @@
-# frontend/Dockerfile
+# Dockerfile for React
 FROM nginx:alpine
 
-# Копируем готовую сборку React в директорию Nginx
-COPY . /usr/share/nginx/html
+# Copy build files
+COPY build/ /usr/share/nginx/html
 
-# Настраиваем Nginx для обслуживания React-приложения
+# Expose port 80
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
