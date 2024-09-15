@@ -8,8 +8,6 @@ services:
     command: gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application
     volumes:
       - ./backend:/app
-    depends_on:
-      - aiogram
     expose:
       - "8000"
 
