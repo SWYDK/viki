@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    volumes:
+      - ./backend:/app
+    expose:
+      - 8000
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://user:password@db:5432/vikingdb
+    command: gunicorn viking.wsgi:application --bind 0.0.0.0:8000
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    expose:
+      - 80
+
+  db:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_DB: vikingdb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  postgres_data:
